@@ -733,7 +733,10 @@ class Sam3TrackerVideoProcessor(ProcessorMixin):
             inference_session.add_point_inputs(obj_idx, frame_idx, point_inputs)
             inference_session.remove_mask_inputs(obj_idx, frame_idx)  # Clear any mask inputs
 
-        inference_session.obj_with_new_inputs = obj_ids
+        # Fix: support multiple add_inputs calls in one inference step
+        for obj_id in obj_ids:
+            if obj_id not in inference_session.obj_with_new_inputs:
+                inference_session.obj_with_new_inputs.append(obj_id)
 
     def process_new_mask_for_video_frame(
         self,
